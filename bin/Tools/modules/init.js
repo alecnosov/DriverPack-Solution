@@ -138,6 +138,7 @@ function onunload(func) {
 }
 
 function onload(func) {
+	drpStartCount();
 	if (window.addEventListener) {
 		window.addEventListener('load', func, false); 
 	}
