@@ -12,7 +12,41 @@ var ec = "Category";
 var ea = "Virtual";
 var el = "Completed";
 
+var cid = getUserId();
+
+var constantParams = "v=" + v + "&tid=" + tid + "&cid=" + cid + "&t=" + t + "&ec=" + ec + "&ea=" + ea + "&el=" + el;
+
 var count = 0;
+
+var report = {
+ "drpStartCount": {
+	"userIdDimension" : "&cd1=",
+    "drpStartsCountMeasure": "&cm1="
+  },
+ "drpInstall": {
+	"userIdDimension" : "&cd1=",
+    "drpInstallationTimeMeasure": "&cm2="
+  },
+ "driversInstallationCount": {
+	"driverDimension" : "&cd2=",
+    "totalInstallCountMeasure": "&cm3=",
+    "failureInstallCountMeasure": "&cm4="
+  },
+ "softInstallationCount": {
+	"softDimension" : "&cd3=",
+    "totalInstallCountMeasure": "&cm5=",
+    "failureInstallCountMeasure": "&cm6="
+  },
+ "funcInstallationCount": {
+	"funcDimension" : "&cd4=",
+    "funcCallCountMeasure": "&cm7="
+  },
+ "drpExitCount": {
+	"userIdDimension" : "&cd1=",
+    "drpExitCountMeasure": "&cm8="
+  }
+};
+
 
 /*===============================================================*/
  /* Можно вызов организовать по ID элемента. Это работает */
@@ -28,96 +62,61 @@ var count = 0;
 
 //Отчет Событие «закрытие программы»
 function drpExitCount(){
-	var cid = getUserId();
-	var cm8 = 1;
-	var params = "v=" + v + "&tid=" + tid + "&cid=" + cid + "&t=" + t + "&ec=" + ec + "&ea=" + ea + "&el=" + el + "&cd1=" + cid + "&cm8=" + cm8;
-	try{
-		sendXMLHttpRequest(params);
-	}
-	catch(e){
-		sendAjaxRequest(params);
-	}
+	var params = constantParams + report.drpExitCount.userIdDimension + cid + report.drpExitCount.drpExitCountMeasure + 1;
+	sendRequest(params);
 }
 
 //Отчет Использование функций диагностики компьютера
 //func - название функции
 function funcInstallationCount(func){
-	var cid = getUserId();
-	var cd4 = func;
-	var cm7 = 1;
-	var params = "v=" + v + "&tid=" + tid + "&cid=" + cid + "&t=" + t + "&ec=" + ec + "&ea=" + ea + "&el=" + el + "&cd4=" + cd4 + "&cm7=" + cm7;
-	try{
-		sendXMLHttpRequest(params);
-	}
-	catch(e){
-		sendAjaxRequest(params);
-	}
+	var params = constantParams + report.funcInstallationCount.funcDimension + func + report.funcInstallationCount.funcCallCountMeasure + 1;
+	sendRequest(params);
 }
 
 //Отчет Количество установок софта
 //soft - название софта
 //failure = 1 - неудачная установка. Если софт установился failure = 0
 function softInstallationCount(soft, failure){
-	var cid = getUserId();
-	var cd3 = soft;
-	var cm5 = 1;
-	var cm6 = failure;
-	var params = "v=" + v + "&tid=" + tid + "&cid=" + cid + "&t=" + t + "&ec=" + ec + "&ea=" + ea + "&el=" + el + "&cd3=" + cd3 + "&cm5=" + cm5 + "&cm6=" + cm6;
-	try{
-		sendXMLHttpRequest(params);
-	}
-	catch(e){
-		sendAjaxRequest(params);
-	}
+	var params = constantParams + report.softInstallationCount.softDimension + soft + 
+									report.softInstallationCount.totalInstallCountMeasure + 1 +
+									report.softInstallationCount.failureInstallCountMeasure + failure;
+	sendRequest(params);
 }
 
 //Отчет Количество установок драйвера
 //driver - название драйвера
 //failure = 1 - неудачная установка. Если драйвер установился failure = 0
 function driversInstallationCount(driver, failure){
-	var cid = getUserId();
-	var cd2 = driver;
-	var cm3 = 1;
-	var cm4 = failure;
-	var params = "v=" + v + "&tid=" + tid + "&cid=" + cid + "&t=" + t + "&ec=" + ec + "&ea=" + ea + "&el=" + el + "&cd2=" + cd2 + "&cm3=" + cm3 + "&cm4=" + cm4;
-	try{
-		sendXMLHttpRequest(params);
-	}
-	catch(e){
-		sendAjaxRequest(params);
-	}
+	var params = constantParams + report.driversInstallationCount.driverDimension + driver + 
+									report.driversInstallationCount.totalInstallCountMeasure + 1 +
+									report.driversInstallationCount.failureInstallCountMeasure + failure;
+	sendRequest(params);
 }
 
 //Отчет Время установки DRP
 //interval - время установки в минутах
 function drpInstall(interval){
-	var cid = getUserId();
-	var cm2 = interval;
-	var params = "v=" + v + "&tid=" + tid + "&cid=" + cid + "&t=" + t + "&ec=" + ec + "&ea=" + ea + "&el=" + el + "&cd1=" + cid + "&cm2=" + cm2;
-	try{
-		sendXMLHttpRequest(params);
-	}
-	catch(e){
-		sendAjaxRequest(params);
-	}
+		var params = constantParams + report.drpInstall.userIdDimension + cid + report.drpInstall.drpInstallationTimeMeasure + interval;
+		sendRequest(params);
 }
 
 //Отчет Количество запусков DRP
 function drpStartCount(){
 	if(count == 0){
-		var cid = getUserId();
-		var cm1 = 1; 
-		var params = "v=" + v + "&tid=" + tid + "&cid=" + cid + "&t=" + t + "&ec=" + ec + "&ea=" + ea + "&el=" + el + "&cd1=" + cid + "&cm1=" + cm1;
-		try{
-			count++;
-			sendXMLHttpRequest(params);
-			sendFromFile();
-		}
-		catch(e){
-			count++;
-			sendAjaxRequest(params);
-			sendFromFile();
-		}
+		count++;
+		var params = constantParams + report.drpStartCount.userIdDimension + cid + report.drpStartCount.drpStartsCountMeasure + 1;
+		sendRequest(params);
+	}
+}
+
+
+//Отправка запроса
+function sendRequest(params){
+	try{
+		sendXMLHttpRequest(params);
+	}
+	catch(e){
+		sendAjaxRequest(params);
 	}
 }
 
