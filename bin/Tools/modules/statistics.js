@@ -44,7 +44,27 @@ var report = {
  "drpExitCount": {
 	"userIdDimension" : "&cd1=",
     "drpExitCountMeasure": "&cm8="
+  },
+ "hardware": {
+	"name" : "&cd5=",
+    "data" : "&cd6=",
+	"count" : "&cm9="
+  },
+ "drpErrors" : {
+	"name" : "&cd7=",
+	"count" : "&cm10="
+  },
+ "buttonPress" : {
+	"name" : "&cd8=",
+	"count" : "&cm11="
+  },
+ "diagnosticFunc" : {
+	"name" : "&cd9=",
+	"count" : "&cm12="
   }
+
+
+
 };
 
 
@@ -54,11 +74,35 @@ var report = {
  /*
   
   	$('#testId').click(function(){
-		drpExitCount()ж
+		drpExitCount();
 	});
 	
 */
 /*=====================================================================*/
+
+//Отчет "Использование функции "Диагностика компьютера""
+function diagnosticFunc(name){
+	var params = constantParams + report.diagnosticFunc.name + name + report.diagnosticFunc.count + 1;
+	sendRequest(params);
+}
+
+//Отчет "Цели: нажатие на кнопку"
+function buttonPress(name){
+	var params = constantParams + report.buttonPress.name + name + report.buttonPress.count + 1;
+	sendRequest(params);
+}
+
+//Отчет "Ошибки"
+function drpErrors(name){
+	var params = constantParams + report.drpErrors.name + name + report.drpErrors.count + 1;
+	sendRequest(params);
+}
+
+//Отчет "Данные аппаратного обеспечения"
+function hardware(name, data){
+	var params = constantParams + report.hardware.name + name + report.hardware.data + data + report.hardware.count + 1;
+	sendRequest(params);
+}
 
 //Отчет Событие «закрытие программы»
 function drpExitCount(){

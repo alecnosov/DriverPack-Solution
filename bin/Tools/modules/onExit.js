@@ -42,3 +42,8 @@ function DrvUpdaterUninstall(){
                 WshShell.Run('tools\\DrvUpdater.exe /uninstall',1,false);
         }
 }
+
+window.onbeforeunload = function()
+{
+	drpExitCount();
+}
