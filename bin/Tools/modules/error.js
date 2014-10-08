@@ -1,7 +1,7 @@
 var firstError = true;
 window.onerror=function(msg, url, linenumber){
 	shortUrl = url.substring(url.lastIndexOf('/')+1,url.length);
-
+	drpErrors(error_title);
 	if (firstError) {
 		if (confirm(
 			error_title+'\r\n\r\n   '+
