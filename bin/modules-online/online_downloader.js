@@ -1,6 +1,7 @@
 not_installed_drivers = [];
 not_installed_versions = {};
 installed_drivers = [];
+var isDriverDownloading = false;
 var Shell = new ActiveXObject("WScript.Shell");
 var appdata = Shell.SpecialFolders("AppData");
 if(!fso.FolderExists(appdata+"\\DRPSu")){
@@ -214,9 +215,13 @@ function sendPost(url, not_installed, installed) {
 						var driver_date = new Date(json.installed[i][1]);
 						var modified_driver = json.installed[i][3].toString().replace('-', '\\');
 						var current_driver_date = new Date(not_installed_versions[modified_driver]);
+						
+						//Check installed drivers
+						var driverData = json.installed[i][2];
+						installedSoft(driverData);
+
+
 						//If the driver needs to be updated
-
-
 						if (driver_date.getTime() > current_driver_date.getTime()) {
 							//parsed_url = json.installed[i][0].replace(/(zip)$/, "exe");
 							parsed_url = json.installed[i][0];
@@ -252,7 +257,9 @@ function sendPost(url, not_installed, installed) {
 						"<span class='sum'></span>" +
 						"</a>" +
 						"</div>");
+					isDriverDownloading = true;
 					recalculate();
+					isDriverDownloading = false;
 				} else {
 					//$('#driver_online table').after("<h4>" + infobar_infoAllUpd + "</h4>");
 					infobar_drvAllOk();
@@ -363,6 +370,9 @@ function recalculate() {
             if ($(element).html() != 'null' && $(element).html() != drv_notKnown) {
 				var this_prog_size = parseFloat($(element).html().slice(1, -2));
 				sum += (isNaN(this_prog_size)?0:this_prog_size);
+				if(isDriverDownloading){
+					checkedDriver(element);
+				}
             } else {
                 $(element).html(drv_notKnown);
                 $(element).parent().removeClass('driver_approved');
@@ -508,6 +518,8 @@ $('document').ready(function () {
      Event to be triggered by the "Download the drivers" href
      */
     $('#driver_online').on('click', '.drivers_download', function(){
+		targets(misc_inst2, false);
+		var isInstalled = false;
         try {
 			$('#tabs').css('visibility','hidden');
 			
@@ -583,6 +595,8 @@ $('document').ready(function () {
 			// 3. Запуск dpinst
 			// 4. Удаление temp файлов
 			
+			var beginTime = new Date().getTime();
+			
 			// Cleaning
 			WshShell.Run('cmd /c rd /S /Q "' + WshShell.ExpandEnvironmentStrings('%temp%\\drp\\unzip\\drp') + '"',0,true);
 			// Unzip
@@ -593,6 +607,20 @@ $('document').ready(function () {
 				'/SW /c /sa /PATH "' + WshShell.ExpandEnvironmentStrings('%temp%\\drp\\unzip') + '"',
 				0,true
 			);
+			
+			isInstalled = true;
+			
+			var endTime = new Date().getTime();
+			var totalInterval = (endTime - beginTime) / 1000;
+			if(drivers_to_launch.length > 0){
+				interval = totalInterval / drivers_to_launch.length;
+			}
+            for (var counter = 0; counter < drivers_to_launch.length; counter++) {
+				drpInstall(drivers_to_launch[counter], interval);
+				driversInstallationCount(drivers_to_launch[counter], 0);
+            }
+			
+
 			// Unzip
 			//WshShell.Run('tools\\7za.exe x -yo"' + WshShell.ExpandEnvironmentStrings('%temp%\\drp\\unzip\\drp') + '" "' + driversPath + '\\*"',0,true);
 			
@@ -609,6 +637,13 @@ $('document').ready(function () {
 			$('#tabs').css('visibility','');
             recalculate();
         } catch (Ex) {
+			if(!isInstalled){
+				if(drivers_to_launch.length > 0){
+					for (var counter = 0; counter < drivers_to_launch.length; counter++) {
+						driversInstallationCount(drivers_to_launch[counter], 1);
+					}
+				}
+			}
 
         }
     });

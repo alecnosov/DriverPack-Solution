@@ -34,6 +34,7 @@ To debug run: \bin\runDebugMode.js
 </noscript>
 
 <script type="text/javascript" src="tools\modules\statistics.js"></script>
+<script type="text/javascript" src="tools\modules\statistics_hdd.js"></script>
 
 <script type="text/javascript" src="tools\modules\init.js"></script>
 <script type="text/javascript" src="tools\Branding\branding.js"></script>
@@ -143,7 +144,9 @@ To debug run: \bin\runDebugMode.js
 </head>
 
 <body>
+
 <div id="preloading"><img src="tools\load8.gif"></div>
+
 <table height="100%" border="0" class="panel" id="panel" width="200">
   <tr style="vertical-align:top;">
 	<td class="panel-top" width="335">
@@ -232,7 +235,7 @@ To debug run: \bin\runDebugMode.js
 	  <div id="logo"><br><br><span style="padding-left:60px;"><img id="logo-img" src="tools\ico\med_logo.png"/></span><br><img id="logo-text" src="tools\ico\logo-text.png"/><br><center><img id="logo-brand" src="tools\Branding\logo.png"/></center></div>
 
 	</td>
-	<td class="tooglePanel" onMouseDown="tooglePanel()"></td>
+	<td class="tooglePanel" onMouseDown="tooglePanel();"></td>
   </tr>
 
   <tr valign="top">
@@ -444,7 +447,7 @@ To debug run: \bin\runDebugMode.js
 					   </td>
 
 					   <td>
-					    <button class="btn btn-mini btn-diag tooltips" id="cleanWin-button" onclick="try { objShell.ShellExecute('cleanmgr.exe', '', '', 'runas', 1); } catch (e){}"><script>l('cleanWin_button')</script></button>
+					    <button class="btn btn-mini btn-diag tooltips" id="cleanWin-button" onclick="try { targets(cleanWin_buttonTitle, false); WshShell.Run('cleanmgr.exe', 1, true); } catch (e){}"><script>l('cleanWin_button')</script></button>
 						<script>document.getElementById('cleanWin-button').title=cleanWin_buttonTitle</script>
 					   </td>
 
@@ -502,6 +505,9 @@ To debug run: \bin\runDebugMode.js
 	//ToDo: Add to config opportunity not to turn
 	dropddownbutton_Up('img_0','div_0');
 </script>
+
+<script> hardwareData(); </script>
+
 <div id="tabs">
 <ul class="tab">
 	<li id="tab-driver" onmousedown="infobar_driver()"><a href="#" onclick="return false;"><span><script>l('infobar_tabDriver')</script> <b class="badge badge-warning" id="badge-drivers">0</b></span></a></li>
@@ -887,9 +893,11 @@ function tooglePanel(mode){
 	}
 }
 function hideOrShow(tab,mode){
+//alert("hideOrShow(tab,mode) : tab = " + tab + "; mode = " + mode);
 	if (tab) document.getElementById(tab).style.display=mode?"none":"block";
 }
 function loadParam(value,to){
+//alert("loadParam(value,to) : value = " + value + "; to = " + to);
 	lf('loadParam');
 	document.getElementById(to).checked = value;
 }
@@ -958,6 +966,7 @@ if (daysLeft2 > 365 && confirm(alert_askUpdate))
 
 
 function changeBox(itemid) {
+	targets(itemid, false);
 	lf('changeBox');
 	var cbox = document.getElementById(itemid);
 	try { var box = eval(cbox); }
@@ -966,7 +975,7 @@ function changeBox(itemid) {
 }
 
 function set_lists(a1,a2,a3,a4,a5,a6,a7,a8,b1,b2,b3,b4,b5,b6,b7,b8){
-	
+
 	if (a3=='none') { hideOrShow('button_forManualInst',true); } //To display the "Select All" - "Install" tab only "driver"
 	else { hideOrShow('button_forManualInst',false); }
 	
@@ -1010,6 +1019,7 @@ function hideDetails(mode){
 
 // "Expert mode" checkbox
 function toggle_expert_mode(mode){
+
 	lf('toggle_expert_mode');
 	if(mode=="undefined")mode=true;
 	saveParam('expertMode',mode);
@@ -1034,6 +1044,7 @@ function toggle_settings_mode(mode){
 var need_reboot;
 // "Run" Button
 function run_button(ask, callback) {
+alert("run_button : " + buttonCount);
 	lf('run_button');
 	if (instRunCount != 0) 
 	{
@@ -1058,6 +1069,7 @@ function run_button(ask, callback) {
 
 	for (var i = 0; i < buttonCount; i++) {
 		var checkbox = document.getElementById('chk'+i);
+alert("checkbox = " + checkbox);
 		if (checkbox.checked) {
 			if (instType_all==5) {
 				if (button_div[i] != "driverpacks")
@@ -1330,7 +1342,6 @@ function add_button(div,pack_icon,pack_folder,pack_name,pack_desc,dev_name,dev_h
 		hint = "<img src='tools\\ico\\3.png'>";
 		hint_desc = hint_bluetooth;
 	}*/
-
 	if(is_checked)ChangeChkCount(is_checked?1:-1);
 	// Driverpack item and hint		
 	buttonContent =
@@ -2455,6 +2466,7 @@ var table_key = [];
 				}
 				var opt = RegExp.$2.toLowerCase();
 				var val = RegExp.$3;
+alert("VAL = " + val);
 				if (cur_sect == "driverpack") {
 					if (opt=="rootdir") {
 						if (val.charAt(val.length-1) != '\\') val += "\\";
@@ -2808,6 +2820,7 @@ var table_key = [];
 
 	// "BugReport" button
 	function BugReport() {
+		targets(button_bug, false);
 		lf('BugReport');
 		var myObject = new Object();
 		myObject.lang = lang;
@@ -2821,6 +2834,7 @@ var table_key = [];
 
 	// "Refresh" button
 	function refresh() {
+		targets(button_refresh, true);
 		lf('refresh');
 		if (instRunCount != 0) { alert(alert_waitInstall); return; }
 		if (progressBar) return;
@@ -2863,6 +2877,7 @@ var table_key = [];
 		if ((doc_num['driverpacks'] > 0) && (doc_num['driverpacks'] < minCountDRP)){
 			addNotice(isNotFullDriverpacks);
 		}
+//		alert("VERSION = " + version + verType); 
 		//alert(doc_num['driverpacks']);
 		if (doc_num['driverpacks'] == 0){
 			verType=verType+' Online';
@@ -2905,6 +2920,7 @@ var table_key = [];
 
 	// Toggle checkbox
 	function ChangeChkCount(add) {
+alert("ChangeChkCount(add) : add = " + add);
 		lf('ChangeChkCount');
 		obj = document.getElementById('chkCnt');
 		var newValue=parseInt(obj.innerHTML) + add;
@@ -2934,7 +2950,7 @@ var table_key = [];
 	// "Select all" button
 	// Clears all checkboxes if all are cheched AND set all checkboxes in the other case
 	function chkAll() {
-		lf('chkAll');
+	lf('chkAll');
 		if (instRunCount != 0) { alert(alert_waitInstall); return; }
 		ClearChk();
 		var clearflag = true;
@@ -2987,13 +3003,13 @@ winRun('notepad.exe',true,true,true,10,function (){ alert('The process has worke
 				}
 			});
 */
-	function devmgmt(){ lf('devmgmt'); WshShell.Run('devmgmt.msc',0,false); }
-	function appwiz(){ lf('appwiz'); WshShell.Run('control.exe appwiz.cpl',0,false); }
-	function sysRestore(){ lf('sysRestore'); if (OSVersion>=6) { winRun('rstrui.exe','','',true); } else { try { WshShell.Run(env_windir+'\\System32\\restore\\rstrui.exe',0,false); } catch(e) {} } }
-	function msinfo(){ lf('msinfo'); WshShell.Run('msinfo32.exe',0,false); }
-	function help(){ WshShell.Run('tools\\DPS.chm'); }
-	function downloadDRP() { lf('downloadDRP'); return goToUrl('http://drp.su/'+(rusLang?'ru/':'')+'download.htm'); }
-	function buyDRP() { lf('buyDRP'); return goToUrl('http://drp.su/'+(rusLang?'ru/':'')+'buy.htm'); }
+	function devmgmt(){ targets(button_devmgmt, false); lf('devmgmt'); WshShell.Run('devmgmt.msc',0,false); }
+	function appwiz(){ targets(button_appwiz, false); lf('appwiz'); WshShell.Run('control.exe appwiz.cpl',0,false); }
+	function sysRestore(){ targets(bacuper_sysRestore, false); lf('sysRestore'); if (OSVersion>=6) { winRun('rstrui.exe','','',true); } else { try { WshShell.Run(env_windir+'\\System32\\restore\\rstrui.exe',0,false); } catch(e) {} } }
+	function msinfo(){ targets(button_msinfo, false); lf('msinfo'); WshShell.Run('msinfo32.exe',0,false); }
+	function help(){ targets(button_help, false); WshShell.Run('tools\\DPS.chm'); }
+	function downloadDRP() { targets(infobar_downloadFull, false);  lf('downloadDRP'); return goToUrl('http://drp.su/'+(rusLang?'ru/':'')+'download.htm'); }
+	function buyDRP() { targets(infobar_buy, false); lf('buyDRP'); return goToUrl('http://drp.su/'+(rusLang?'ru/':'')+'buy.htm'); }
 
 	function shadow(mode){
 		lf('shadow');
@@ -3296,6 +3312,7 @@ function showModal(caption,text,txtOK,txtCancel,onClose)
 }
 
 </script>
+
 </body>
 
 <script type="text/javascript" src="tools\modules\jquery.progressbar.min.js"></script>

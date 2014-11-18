@@ -6,6 +6,7 @@
 
 /** @lends Person.prototype */
  function defrag(){
+	targets(defrag_buttonTitle, false);
 	if (OSVersion >= 6) {
 
 		try { winRun('dfrgui.exe','','',true); }

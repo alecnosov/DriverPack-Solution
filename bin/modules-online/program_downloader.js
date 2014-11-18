@@ -1,6 +1,7 @@
 ﻿var Shell = new ActiveXObject("WScript.Shell");
 var appdata = Shell.SpecialFolders("AppData");
 var softJson;
+var isProgramDownloading = false;
 
 if(!fso.FolderExists(appdata+"\\DRPSu")){
 	fso.CreateFolder(appdata+"\\DRPSu");
@@ -67,7 +68,6 @@ function getPrograms() {
 		contentType: 'text/json; charset=utf-8',
 		//Request with the data about the drivers
 		success: function (json) {
-			
 			softJson = json;
 			for (var i = 0; i < json.length; i++) {
 				if (json[i]['Registry_' + system_version] != "") {
@@ -87,6 +87,10 @@ function getPrograms() {
 							}
 							
 						}
+					}
+					else{
+						var softData = json[i]['Name'] + " - Version : " + json[i]['Version'];
+						installedSoft(softData);
 					}
 				}
 			}
@@ -109,7 +113,9 @@ function getPrograms() {
 
 			if($('.approved').length > 0){
 				$('.programs table').after("<div class='programs_install' style='margin-top: 20px;'><!--<img src='tools\\ico\\5.png'>--> <a href='#' style='font-size: 14px' class='btn btn-success programs_download'>" + infobar_buttonInst + " <span class='programs_sum'></span></a></div>");
+				isProgramDownloading = true;
 				program_recalculate();
+				isProgramDownloading = false;
 			} else {
 				//$('.program_title').html('123');
 			}
@@ -148,6 +154,9 @@ function program_recalculate() {
 			if ($(element).html() != 'null' && $(element).html() != drv_notKnown) {
 				var this_prog_size = parseFloat($(element).html().slice(1, -2));
 				sum += (isNaN(this_prog_size)?0:this_prog_size);
+				if(isProgramDownloading){
+					checkedSoft(element);
+				}
 			} else {
 				$(element).html(drv_notKnown);
 				$(element).parent().removeClass('approved');
@@ -371,6 +380,7 @@ $(document).ready(function () {
 
 
 	$('.programs').on('click', '.programs_download', function () {
+		targets(misc_inst5, false);
 		$('#tabs').css('visibility','hidden');
 		
 		if($('.install_shortcuts').is(':checked')){
@@ -410,13 +420,25 @@ $(document).ready(function () {
 			'',
 			'green'
 		);
-		
-		for (var counter = 0; counter < programs_to_launch.length; counter++) {
-			if (programs_to_launch[counter] != null) {
-				$('#programs_to_launch_count').html(counter+1);
-				WshShell.Run(programsPath +"\\"+ programs_to_launch[counter], 0, true);
+		var progName = "Undefined";
+		try{
+			for (var counter = 0; counter < programs_to_launch.length; counter++) {
+				if (programs_to_launch[counter] != null) {
+					var beginTime = new Date().getTime();
+					progName = programs_to_launch[counter];
+					$('#programs_to_launch_count').html(counter+1);
+					WshShell.Run(programsPath +"\\"+ programs_to_launch[counter], 0, true);
+					var endTime = new Date().getTime();
+					var interval = (endTime - beginTime) / 1000;
+					drpInstall(progName, interval);
+					softInstallationCount(progName, 0);
+				}
 			}
 		}
+		catch(Ex){
+			softInstallationCount(progName, 1);
+		}
+		
 		location.reload();
 		
 		$('#tabs').css('visibility','');

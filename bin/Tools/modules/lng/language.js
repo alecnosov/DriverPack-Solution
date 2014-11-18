@@ -294,6 +294,7 @@ function l(varibles) {
 
 // Save language settings
 function language_onChange(objSel) {
+	targets("Выбор языка", false);
 	lf('language_onChange');
 	if (objSel.selectedIndex != -1) {
 		WshShell.RegWrite (Reg + "lang",objSel.options[objSel.selectedIndex].value,"REG_SZ");

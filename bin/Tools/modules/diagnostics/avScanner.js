@@ -29,6 +29,8 @@ function avScanner(){
 	var mrtInSystem = softFolder+'\\MBAM.exe /S';
 	var mrtInDRP = softFolder+'\\MBAM.exe /S';
 	
+	targets(avScanner_buttonTitle, false);
+	
 	try {
 		if (fso.FileExists(mrtInSystem)) {
 			var mrtInSystemDate = fso.GetFile(mrtInSystem).DateLastModified;

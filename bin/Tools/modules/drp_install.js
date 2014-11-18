@@ -10,15 +10,11 @@
 DRPinstall = {
 	
 	options: {
-		var beginTime = new Date().getTime();
 		AppName: "DriverPack Solution",
 		InstallDir: WshShell.ExpandEnvironmentStrings('%ProgramFiles%\\DriverPackSolution'),
 		AppPublisher: "Kuzyakov Artur",
 		AppURL: "http://drp.su/",
 		AppID: "{9DD6B5CC-328F-4203-A8C0-28617BD98950}"
-		var endTime = new Date().getTime();
-		var interval = (endTime - beginTime) / 1000 / 60;
-		drpInstall(interval);
 	},
 	
 	
@@ -133,9 +129,8 @@ DRPinstall = {
 		DRPinstall.Shortcut_ControlPanel();
 		DRPinstall.Shortcut_StartMenu();
 		var endTime = new Date().getTime();
-		var interval = (endTime - beginTime) / 1000 / 60;
-		drpInstall(interval);
-		
+		var interval = (endTime - beginTime) / 1000;
+		drpInstall("DRP", interval);
 	},
 	
 	

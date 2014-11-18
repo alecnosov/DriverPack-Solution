@@ -58,6 +58,7 @@ function loadValue(key,default_val) {
 function goToUrl(url){
 	lf('goToUrl');
 	try {
+		targets(url, false);
 		defBrowser = RegRead("HKCU\\SOFTWARE\\Clients\\StartMenuInternet\\");
 		if (!defBrowser) defBrowser = RegRead("HKLM\\SOFTWARE\\Clients\\StartMenuInternet\\");
 		runComm = RegRead("HKLM\\SOFTWARE\\Clients\\StartMenuInternet\\" + defBrowser + "\\shell\\open\\command\\");
@@ -146,3 +147,5 @@ function onload(func) {
 		window.attachEvent('onload', func);
 	}
 }
+
+

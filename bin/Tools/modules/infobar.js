@@ -107,6 +107,7 @@ function infobar_update(){
 }
 
 function infobar_driver(){
+	targets(infobar_tabDriver, true);
 	var title,text='',button='';
 
 	if (doc_num['driver_available']){ title=infobar_titleDriverAvailable; }
@@ -174,6 +175,7 @@ function infobar_driver(){
 }
 
 function infobar_programm(){
+	targets(infobar_tabProgramm, true);
 	if ((typeof(programm_list)!="undefined") && (programm_list.length!=0)) {
 		infobar(
 				infobar_titleProgrammAvailable,
@@ -220,6 +222,7 @@ function infobar_programm(){
 		);
 }
 function infobar_drvAdvanced(){
+	targets(infobar_advanced, true);
 	infobar(
 		infobar_titleAllAdv,
 		infobar_infoAllAdv,
@@ -250,6 +253,7 @@ function infobar_drvAdvanced(){
 }
 
 function infobar_drvNone(){
+	targets(infobar_tabOnline, true);
 	infobar(
 			infobar_titleNoDriver,
 			'<b>'+doc_num['no_driver']+'</b> - '+morfolog('infobar_infoNoDriver',doc_num['no_driver'])+' <div id="infobar_urls_div">'+infobar_urls+'</div>',

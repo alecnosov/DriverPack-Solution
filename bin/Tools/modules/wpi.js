@@ -9,6 +9,7 @@ try {
 function wpi(name,sorce) {
 	lf('wpi');
 	try {
+		runningSoft(sorce);
 		var colItems = objWMIService.ExecQuery("SELECT * FROM " + sorce,"WQL");
 		var enumItems = new Enumerator(colItems);
 		for (; !enumItems.atEnd(); enumItems.moveNext()) {
@@ -16,6 +17,7 @@ function wpi(name,sorce) {
 			  eval("var ret = objItem." + name + ";");
 			  ret = ret.replace('null','');
 			  ret = ret.replace('undefined','');
+//alert("WPI : RET = " + ret + "; NAMe = " + name + "; SOURCE = " + sorce);
 
 			  if (ret == null) { return ""; }
 			  return ret;
@@ -53,12 +55,12 @@ function GetOHWMIData(query)
 	try
 	{
 		var colItems = objOHWMIService.ExecQuery(query);
-
 		var retVal=[];
 		var e = new Enumerator(colItems);
 
 		if(colItems.count>0)
 		{
+alert("e.item() = " + e.item());
 			// Show only items corresponding to the very first process
 			var processId = e.item().ProcessId;
 			for(; ! e.atEnd(); e.moveNext())

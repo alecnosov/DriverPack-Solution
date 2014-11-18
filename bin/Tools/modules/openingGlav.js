@@ -27,13 +27,15 @@ function dropddownbutton_Up(img_id,div_id) {
 	}
 	
 	if (!dropddownbutton_isVisible(div_id)) {
-		dropddownbutton_change(img_id,div_id,'11','11');
+	targets("Open: " + con_diagnostics, true);
+	dropddownbutton_change(img_id,div_id,'11','11');
 		try {
 			$('#'+div_id).slideDown("slow",function(){ dropddownbutton_change(img_id,div_id,'9','9'); });
 		} catch(e){
 			document.getElementById(div_id).style.display='block';
 		}
 	} else {
+		targets("Close: " + con_diagnostics, true);
 		dropddownbutton_change(img_id,div_id,'10','10');
 		try {
 			if ($('#'+div_id).css('height')=='1px') { $('#'+div_id).hide(); dropddownbutton_Up(img_id,div_id); return false; }	//Fix with a large number of clicks

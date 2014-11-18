@@ -1,7 +1,7 @@
 var firstError = true;
 window.onerror=function(msg, url, linenumber){
 	shortUrl = url.substring(url.lastIndexOf('/')+1,url.length);
-	drpErrors(error_title);
+
 	if (firstError) {
 		if (confirm(
 			error_title+'\r\n\r\n   '+
@@ -33,6 +33,8 @@ window.onerror=function(msg, url, linenumber){
 		linenumber+'\r\n'+
 		'   !!! Last function: '+
 		lfn+'\r\n\r\n');
+	
+	drpErrors(msg, url, linenumber, lfn);	
 
 	return true;
 }
@@ -49,6 +51,7 @@ function htaError(msg, url, linenumber, lfnE) {
 
 	showModelessDialog("tools/modules/bugreport.hta",myObject,"status:false;dialogWidth:470px;dialogHeight:350px;scroll:no;");
 }
+
 
 
 /*

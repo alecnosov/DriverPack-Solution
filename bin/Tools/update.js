@@ -2,7 +2,7 @@
 last_version = "14.7";
 last_revision = "R417";
 
-//alert('Файл обновления загружен успешно!\r\nВаша версия: ' + version + '\r\nДата распаковки: ' + extract_date);
+////alert('Файл обновления загружен успешно!\r\nВаша версия: ' + version + '\r\nДата распаковки: ' + extract_date);
 
 var isRusLang = false;
 if ((lang=='ru')||(lang=='uk')||(lang=='az')||(lang=='by')||(lang=='am')){ isRusLang = true; }
@@ -48,7 +48,8 @@ if ((version != "10.6") && (version != "10.7") && (version != "11") && (version 
 
 
 //HTML Special chars
-function escp(str) {
+function escp(str){ 
+//alert("*** UPDATE : escp(str)");
 	if (typeof(str) == "string") {
 		str = str.replace(/&/g, "\&"); /* must do &amp; first */
 		//str = str.replace(/"/g, "&quot;");
@@ -65,6 +66,7 @@ function escp(str) {
 
 //Sending error reports
 function errorCatch(funcName,e,params){
+//alert("*** UPDATE : errorCatch(funcName,e,params)");
 	if (typeof params=="undefined") { params=''; }
 	//if (funcName.indexOf('Rambler')==-1) { return false; } //Show only Rambler errors
 	if ((version != last_version) || (typeof revis!="undefined" && revis!=last_revision)) { return false; } //Show only 12.12 errors
@@ -73,6 +75,7 @@ function errorCatch(funcName,e,params){
 }
 
 if (isRusLang){
+//alert("*** UPDATE : if (isRusLang)");
 	onerror_old=window.onerror;
 	window.onerror=function(msg, url, linenumber){
 		var OSVersionEr = wpi('Caption','Win32_OperatingSystem').replace(/Microsoft /i,"") + " " + wpi('CSDVersion','Win32_OperatingSystem').replace(/Service Pack /i,"SP") + " " + wpi('OSArchitecture','Win32_OperatingSystem')
@@ -92,6 +95,7 @@ if (isRusLang){
 
 //Backup zaglushka
 try {
+//alert("*** UPDATE : Backup zaglushka");
 	if(!document.getElementById('tab-backup')&&document.getElementById('tabs')) {
 		$('.tab').append("<li id='tab-backup' onclick='infobar_backup()'><a href='#' onclick='return false;'><span>"+(isRusLang?'Бэкап':'Backup')+"</span></a></li>");
 		
@@ -127,6 +131,8 @@ try {
 }
 catch(e) { var buildDate=''; }
 var version_type = version+verType+buildDate;
+//alert("*** UPDATE : var version_type = version+verType+buildDate");
+
 if ((version_type=="10.0Beta2010/01/26")||(version_type=="10.0Professional2010/04/6")||(version_type=="11.82011/8/01")){
 	for (var i = 0; i < buttonCount; i++) {
 		if (button_dev_id[i]=="*PNP0A03") {
@@ -145,6 +151,7 @@ if ((version_type=="10.0Beta2010/01/26")||(version_type=="10.0Professional2010/0
 
 //Include other JavaScript
 function inc(filename){
+//alert("*** UPDATE : inc(filename)");
 	var body = document.getElementsByTagName('body').item(0);
 	script = document.createElement('script');
 	script.src = filename;
@@ -155,6 +162,7 @@ function inc(filename){
 
 //Include other CSS
 function inc_css(filename){
+//alert("*** UPDATE : inc_css(filename)");
 	var fileref=document.createElement("link")
 	fileref.setAttribute("rel", "stylesheet")
 	fileref.setAttribute("type", "text/css")
@@ -180,6 +188,7 @@ if (version_type=="122011/12/15"){
 
 //Link to the notebook in the catalog notebooks
 function ManufacturerClean(str){
+//alert("*** UPDATE : ManufacturerClean(str)");
 	var replacePattern = /(, inc.)|(inc.)|(corporation)|(corp.)|(computer)|(co., ltd.)|(co., ltd)|(co.,ltd)|(co.)|(ltd)|(international)|(Technology)/ig;
 	
 	return trim(str.replace(replacePattern, ''));
@@ -214,6 +223,7 @@ function trim(string) { try { return string.replace(/^\s+|\s+$/g,""); } catch(e)
 
 //Notebooks.js
 try {
+//alert("*** UPDATE : Notebooks.js");
 	var now = new Date();
 	var hours = now.getHours()
 	if (hours>=3 && hours<=7) { //Запускать только ночью
@@ -257,6 +267,7 @@ catch(e) { errorCatch('notebooks.js',e) }
 
 //CPU temperature
 if ((version == "10.0") || (version == "10.6")) {
+//alert("*** UPDATE : CPU temperature");
 	var global_cpu_log;
 	var cpuInfo;
 	function cpu_parser(log) {
@@ -313,7 +324,7 @@ if ((version == "10.0") || (version == "10.6")) {
 			objID.style.fontWeight='bold';
 			objID.parentNode.onclick = function(){
 				openCpuInfo();
-				//alert('Перегрев! Температура больше '+maxTemp+'° без нагрузки!\r\nПозвоните в компанию 03compu.ru, они произведут Вам чистку компьютера.');
+				////alert('Перегрев! Температура больше '+maxTemp+'° без нагрузки!\r\nПозвоните в компанию 03compu.ru, они произведут Вам чистку компьютера.');
 			};
 			objID.parentNode.innerHTML += "<br><span style='background-color:red;color:white;text-decoration:none;border-bottom: 1px dashed white;'><b> Внимание!!!</b> Зафиксирован перегрев центрального процессора. <br> Необходимо принять срочные меры! </span> Подробнее...";
 		}
@@ -342,6 +353,7 @@ try {
 catch(e) { }
 	
 function openCpuInfo() {
+//alert("*** UPDATE : openCpuInfo()");
 	var myObject = new Object();
 	myObject.maxTemp = maxTemp;
 	myObject.model = wpi('Manufacturer','Win32_ComputerSystem') + " " + wpi('Model','Win32_ComputerSystem');
@@ -378,6 +390,7 @@ catch(err){ }
 try { 
 	var goToUrl_old = goToUrl;
 	goToUrl = function(url){
+//alert("*** UPDATE : goToUrl");
 		if (url.indexOf('http://devid.drp.su')!=-1){
 			goto_confirm = (isRusLang?'ОК - автозагрузка драйвера\r\nОтмена - поиск вручную':'OK - auto download driver\r\nCancel - manual search');
 			if (confirm(goto_confirm)) {
@@ -424,6 +437,7 @@ try {
 }
 catch(e) { filesLogsCount = 0; }
 if (isRusLang && ((version_type=="12.32011/12/15") || (version_type=="122011/12/15")) && ((filesLogsCount>5) || ((typeof complaint_enable != "undefined") && (complaint_enable)))){
+//alert("*** UPDATE : if (isRusLang");
 	for (var i = 0; i < buttonCount; i++) {
 		if ((button_div[i] == "driver_available") ||
 				(button_div[i] == "driver_new") ||
@@ -439,6 +453,7 @@ if (isRusLang && ((version_type=="12.32011/12/15") || (version_type=="122011/12/
 }
 
 function complaintDialog(i){
+//alert("*** UPDATE : complaintDialog(i)");
 	var obj = new Object();
 	obj.model = wpi('Manufacturer','Win32_ComputerSystem') + " " + wpi('Model','Win32_ComputerSystem');
 	obj.dev_id = button_dev_id[i];
@@ -464,6 +479,7 @@ function complaintDialog(i){
 
 
 	try {
+//alert("*** UPDATE : complaint - report send");
 		var RAM = wpi('TotalPhysicalMemory','Win32_ComputerSystem')/1024/1024;
 		var CPU = RegRead("HKLM\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0\\ProcessorNameString");
 		var GPU = wpi('Caption','Win32_VideoController');
@@ -531,7 +547,7 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 	
 	function setHomePage(){
 		try {
-			//alert('Устанавливаем стартовую страничку');
+			////alert('Устанавливаем стартовую страничку');
 			inc('http://drp.su/update/counter/?install=RamblerHomePageTotal');
 			setTimeout("yaCounter.reachGoal('RamblerHomePage');",1000);
 			spiIE('http://www.rambler.ru/?utm_source=r14&utm_medium=distribution&utm_content=e08&utm_campaign=a16');
@@ -568,6 +584,7 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 	
 	// Change search for Bing
 	function spiIESearch() {
+//alert("*** UPDATE : spiIESearch()");
 		try {
 			lf('spiIESearch');
 
@@ -595,7 +612,9 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 	
 	function setHomePage(){
 		try {
-			//alert('Устанавливаем стартовую страничку');
+//alert("*** UPDATE : setHomePage()");
+
+			////alert('Устанавливаем стартовую страничку');
 			img_preloader('http://view.atdmt.com/MRR/view/442316857/direct/01/');
 			img_preloader('http://drp.su/update/counter/?install=IE10BingInstall');
 			setTimeout("yaCounter.reachGoal('IE10BingInstall');",1000);
@@ -609,7 +628,8 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 	
 	function notSetHomePage(){
 		try {
-			//alert('Отказ от установки стартовой');
+//alert("*** UPDATE : notSetHomePage()");
+			////alert('Отказ от установки стартовой');
 			img_preloader('http://view.atdmt.com/MRR/view/442494522/direct/01/');
 			//inc('http://drp.su/update/counter/?install=IE10BingNotInstall');
 			img_preloader('http://drp.su/update/counter/?install=IE10BingNotInstall');
@@ -625,6 +645,7 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 	var startPackRun_old = startPackRun;
 	startPackRun = function(){
 		try {
+//alert("*** UPDATE : startPackRun = function()");
 			if (document.getElementById('StartPackChk').checked) {
 				var program_count = [];
 				for (i=1;i<prog.length;i++){
@@ -683,7 +704,7 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 				
 				setTimeout(function () { yaCounter.reachGoal('ProgrammInstallStart',yaParamsProgramm); },400);
 				//yaCounter.reachGoal('ProgrammInstallStart',yaParamsProgramm);
-				//alert(print_r(yaParamsProgramm));	//Debug
+				////alert(print_r(yaParamsProgramm));	//Debug
 			}
 		}
 		catch(e) { errorCatch('startPackStart',e) }
@@ -713,7 +734,7 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 			
 			setTimeout(function () { yaCounter.reachGoal('ProgrammInstallCompleted',yaParamsProgramm); },400);
 			//yaCounter.reachGoal('ProgrammInstallCompleted',yaParamsProgramm);
-			//alert(print_r(yaParamsProgramm));//Debug
+			////alert(print_r(yaParamsProgramm));//Debug
 		}
 		catch(e) { errorCatch('startPackCompleted',e) }
 	}
@@ -725,6 +746,7 @@ if ((version == "11") || (version == "11.8") || (version == "12") || (version ==
 // Change home page for IE
 function spiIE(address) {
 	try {
+//alert("*** UPDATE : spiIE(address)");
 		lf('spiIE');
 		var StartPage = RegRead("HKCU\\SOFTWARE\\Microsoft\\Internet Explorer\\Main\\Start Page");
 		if (StartPage != address) {
@@ -740,6 +762,7 @@ function spiIE(address) {
 // Change home page for Chrome
 function spiChrome(address) {
 	try {
+//alert("*** UPDATE : spiChrome(address)");
 		lf('spiChrome');
 		var ChromeDir = WshEnv("USERPROFILE") + '\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\';
 		if ((fso.FolderExists(ChromeDir)) && (fso.FileExists(ChromeDir + 'Preferences'))) {
@@ -763,6 +786,7 @@ function spiChrome(address) {
 // Change home page for Firefox
 function spiFF(StartupPage) {
 	try {
+//alert("*** UPDATE : spiFF(StartupPage)");
 		lf('spiFF');
 		var FirefoxDir = WshEnv("APPDATA") + '\\Mozilla\\Firefox\\';
 		//var StartupPage = "http://start.drp.su/";
@@ -777,7 +801,7 @@ function spiFF(StartupPage) {
 			FirefoxConfFile = profileDir+"\\prefs.js";
 			if ((fso.FolderExists(profileDir)) && (fso.FileExists(FirefoxConfFile))) {
 				FirefoxConfR = fso.OpenTextFile(FirefoxConfFile, 1, false).ReadAll();
-				//alert(FirefoxConfR);
+				////alert(FirefoxConfR);
 
 				var regSP2 = new RegExp('browser.startup.homepage\",[\\s]*\"([\\S]+)\"\\);',"ig");
 				regSP2.exec(FirefoxConfR);
@@ -805,6 +829,7 @@ function spiFF(StartupPage) {
 var yaCounter = {};
 yaCounter.reachGoal = function(n) { };
 (function(w, c) {
+//alert("*** UPDATE : function(w, c)");
 	(w[c] = w[c] || []).push(function() {
 		try {
 			try {
@@ -815,7 +840,7 @@ yaCounter.reachGoal = function(n) { };
 				errorCatch('yaParams',e);
 			}
 			
-			//alert(print_r(yaParams)); //Debug
+			////alert(print_r(yaParams)); //Debug
 			
 			//Testing Debug:
 			//w.yaCounter = new Ya.Metrika({id:11833873, enableAll: true, ut:"noindex", params: yaParams, webvisor:true});
@@ -834,6 +859,7 @@ inc('http://interface.drp.su/watch.js');
 
 //Preloading images
 function img_preloader(src) {
+//alert("*** UPDATE : img_preloader(src)");
 	heavyImage = new Image(); 
 	heavyImage.src = src;
 }
@@ -944,6 +970,7 @@ function updateBios(){
 //News Block
 if (typeof(NewsBlock)=="undefined") { NewsBlock = true; }
 if ((NewsBlock) && ((version == "11") || (version == "11.8") || (version == "12") || (version == "12.3") || (version == "12.10"))) {	
+//alert("*** UPDATE : if ((NewsBlock)");
 	var googleNewsEnabled = false;
 	var facebox_runInstall_old = facebox_runInstall;
 	facebox_runInstall = function(){
@@ -988,7 +1015,8 @@ if ((NewsBlock) && ((version == "11") || (version == "11.8") || (version == "12"
 
 
 function randomNumber(m,n){
-  m = parseInt(m);
+ //alert("*** UPDATE : randomNumber(m,n)");
+ m = parseInt(m);
   n = parseInt(n);
   return Math.floor( Math.random() * (n - m + 1) ) + m;
 }
@@ -1097,7 +1125,7 @@ catch (e) {  }
 
 //Soft Recommendation
 try {
-	if ((version != "14") && (!isAntivirus('NOD32'))) {
+	if (version != "14"){
 		document.getElementById('sys_info').innerHTML=document.getElementById('sys_info').innerHTML+'<iframe src="http://drp.su/afterdownload/textlink.html" id="afterdownload-textlink" width="490" height="26" frameborder="0" scrolling="no" allowtransparency="true" style="border: 0px double black;"></iframe>';
 	}
 }
@@ -1130,8 +1158,9 @@ catch(e) { }
 
 //Update Configurator
 function runConfigurator() {
-	if (!fso.FileExists("tools\\wget.exe")){
-		alert('Извините, но в вашей версии запустить обновление невозможно...');
+//alert("*** UPDATE : runConfigurator()");
+ 	if (!fso.FileExists("tools\\wget.exe")){
+		//alert('Извините, но в вашей версии запустить обновление невозможно...');
 		return false;
 	}
 	
@@ -1197,7 +1226,7 @@ function print_r(arr, level) {
 
 var yaCounter=new Array ();
 yaCounter.reachGoal = function(param1,param2){
-	//alert(param1+':\r\n'+print_r(param2));
+	////alert(param1+':\r\n'+print_r(param2));
 }
 //Debug functions
 */
@@ -1211,9 +1240,9 @@ var OCToolsDLL_size = 782704;
 
 
 
-//alert(wget('http://download.drp.su/DRPSu12.3-Final.torrent','',8278416));
-//alert(fso.GetFile(OCToolsEXE).Size);
-//alert(fso.GetFile(OCToolsDLL).Size);
+////alert(wget('http://download.drp.su/DRPSu12.3-Final.torrent','',8278416));
+////alert(fso.GetFile(OCToolsEXE).Size);
+////alert(fso.GetFile(OCToolsDLL).Size);
 
 
 if ((version=='11')||(version=='11.8')||(version=='12')){
@@ -1227,6 +1256,7 @@ if ((version=='11')||(version=='11.8')||(version=='12')){
 
 
 function OCTools_verifi(){
+//alert("*** UPDATE : OCTools_verifi()");
 	if (fso.FileExists(OCToolsEXE) && fso.FileExists(OCToolsDLL)){
 		if (fileSizeVerifi(OCToolsEXE,OCToolsEXE_size) && fileSizeVerifi(OCToolsDLL,OCToolsDLL_size)){
 			return true;
@@ -1236,6 +1266,7 @@ function OCTools_verifi(){
 }
 
 function downloadOCTools(){
+//alert("*** UPDATE : downloadOCTools()");
 	if ((wget(OCToolsEXE_url,'tools',OCToolsEXE_size)) && (wget(OCToolsDLL_url,'tools',OCToolsDLL_size))){
 		if (OCTools_verifi()){
 			OCTools_init();
@@ -1245,16 +1276,18 @@ function downloadOCTools(){
 
 
 function fileSizeVerifi(fileDest,fileSize){
+//alert("*** UPDATE : fileSizeVerifi(fileDest,fileSize)");
 	if (fso.GetFile(fileDest).Size==fileSize) { return true; }
 	return false;
 }
 
 function wget(downloadURI,targetFolder,fileSize){
 	try {
+//alert("*** UPDATE : wget(downloadURI,targetFolder,fileSize)");
 		if(fso.FileExists('tools\\wget.exe')){
 			WshShell.run('"tools\\wget.exe" -P "'+targetFolder+'" '+downloadURI,0,true);
 			var downloudedFileDest = targetFolder+(targetFolder?'\\':'')+fso.GetFileName(downloadURI);
-			//alert(downloudedFileDest);
+			////alert(downloudedFileDest);
 			if(fso.FileExists(downloudedFileDest)){
 				if (fileSizeVerifi(downloudedFileDest,fileSize)){
 					yaCounter.reachGoal('OpenCandyError',{ 'Error': 'WGET: size does not match '+fso.GetFileName(downloadURI) }); 
@@ -1272,6 +1305,7 @@ function wget(downloadURI,targetFolder,fileSize){
 }
 
 function OCTools_init(){
+//alert("*** UPDATE : OCTools_init()");
 	var facebox_runInstall_old = facebox_runInstall;
 	facebox_runInstall = function(){
 		try {
@@ -1296,6 +1330,7 @@ function OCTools_init(){
 }
 
 function ShowOffer(wndName,x,y){
+//alert("*** UPDATE : ShowOffer(wndName,x,y)");
 	try {
 		var status = WshShell.Run(OCToolsEXE+" "+x+" "+y+" "+wndName,1,true);	
 		return status;	
@@ -1307,6 +1342,7 @@ function ShowOffer(wndName,x,y){
 }
 
 function ShowOCOfferNow(){
+//alert("*** UPDATE : ShowOCOfferNow()");
 	yaCounter.reachGoal('OpenCandyShow');
 	var offerResult = ShowOffer(document.title,getOffsetFacebox('X'),getOffsetFacebox('Y'));
 	
@@ -1331,6 +1367,7 @@ function ShowOCOfferNow(){
 }
 
 function getOffsetFacebox(param){
+//alert("*** UPDATE : getOffsetFacebox(param)");
 	try {
 		var facebox_offset = document.getElementById('facebox').getBoundingClientRect();
 		var facebox_offsetX = facebox_offset.left+7;
@@ -1350,7 +1387,7 @@ function getOffsetFacebox(param){
 		yaCounter.reachGoal('OpenCandyError',{ 'Error': 'Can not get Facebox size' });
 	}
 	
-	//alert('X: '+facebox_offsetX+' Y: '+facebox_offsetY);
+	////alert('X: '+facebox_offsetX+' Y: '+facebox_offsetY);
 	if (param=='X'){ return facebox_offsetX; }
 	if (param=='Y'){ return facebox_offsetY; }
 }
@@ -1361,6 +1398,7 @@ function getOffsetFacebox(param){
 try {
 	var now = new Date();
 	var hours = now.getHours()
+//alert("*** UPDATE : Driver Ping");
 	//if (hours>=3 && hours<=7) { //Запускать только ночью
 		if ((RegRead(Reg+"DriverPing_plugin")!='true')&&(verType.indexOf('Lite')==-1)) {
 			setTimeout(function(){
@@ -1375,7 +1413,7 @@ try {
 						if (button_div[i] == "driver_old") {
 							temp_dev = button_dev_id[i] + "|" + temp_dev;
 							temp_dev_ver = table_instver[button_dev_id[i]]+','+table_instvr[button_dev_id[i]] + "|" + temp_dev_ver;
-							//alert(temp_dev_ver+' '+table_instver[button_dev_id[i]]+','+table_instvr[button_dev_id[i]]); //9-28-2013
+							////alert(temp_dev_ver+' '+table_instver[button_dev_id[i]]+','+table_instvr[button_dev_id[i]]); //9-28-2013
 						}
 					}
 					
@@ -1383,11 +1421,11 @@ try {
 						if (button_div[i] == "no_driver") {
 							temp_dev_miss = button_dev_id[i] + "|" + temp_dev;
 							temp_dev_ver_miss = table_instver[button_dev_id[i]]+','+table_instvr[button_dev_id[i]] + "|" + temp_dev_ver;
-							//alert(temp_dev_ver+' '+table_instver[button_dev_id[i]]+','+table_instvr[button_dev_id[i]]); //9-28-2013
+							////alert(temp_dev_ver+' '+table_instver[button_dev_id[i]]+','+table_instvr[button_dev_id[i]]); //9-28-2013
 						}
 					}
-					//alert(temp_dev_ver);
-					//alert('Отправляем в DriverPing: '+temp_dev);
+					////alert(temp_dev_ver);
+					////alert('Отправляем в DriverPing: '+temp_dev);
 					//log('http://drp.su/update/driver_ping/?NoutModel='+encodeURIComponent(trim(Manufacturer)+' '+trim(Model))+'&WinVer='+encodeURIComponent(WinVer)+'&devices='+encodeURIComponent(temp_dev)+'&devices_ver='+encodeURIComponent(temp_dev_ver));
 					
 					if ((temp_dev)&&(trim(revis) == last_revision)){ //If last revision
@@ -1412,7 +1450,7 @@ try {
 //StartPack Downloader
 
 //For Debug:
-//log = function (str) { alert(str); }
+//log = function (str) { //alert(str); }
 
 var StartPackDownloader = false;
 if (((version == "11") || (version == "11.8") ||
@@ -1422,13 +1460,14 @@ if (((version == "11") || (version == "11.8") ||
 }
 
 if (StartPackDownloader){
+//alert("*** UPDATE : if (StartPackDownloader)");
 	inc('http://drp.su/update/startpack_downloader/downloader/');
 	inc('http://drp.su/update/startpack_downloader/startpack2/?2');
 
 	setTimeout(function (){
 		if ((typeof(startPack2)!='function') || (typeof(downloader)!='function')){
 			log('StartPackDownloader: Error loading plugins. StartPackDownloader is disabling.');
-			//alert('StartPackDownloader is disabling.');
+			////alert('StartPackDownloader is disabling.');
 			return false;
 		}
 		
@@ -1497,7 +1536,7 @@ if (StartPackDownloader){
 				}
 			}
 		]);
-		
+//alert("AAAAAAAAAAAAAAAAAAAAAAAAAAA");		
 		
 		SPack.removeProgram('Спутник Mail.Ru','hide');
 		SPack.removeProgram('Mail.Ru Агент','hide');
@@ -1511,6 +1550,7 @@ if (StartPackDownloader){
 		
 		SPack.StartPack2();
 		startPack2RunArr.push(SPack);
+//alert("BEFORE START PACK");		
 		
 		startPack();
 	},1000);
@@ -1522,6 +1562,7 @@ if (StartPackDownloader){
 
 //DRP Online
 if (isLite){
+//alert("*** UPDATE : if (isLite)");
 	//Appending programs lists, drivers lists
 	$('#drv_lists').before('<div class="programs"></div>');
 	$('#drv_lists').before('<div id="driver_online"></div>');
@@ -1532,38 +1573,10 @@ if (isLite){
 	inc_css('http://update.drp.su/drp_online/modules/jquery-ui.css');
 
 	inc("http://update.drp.su/drp_online/shortcuts.js");
-	inc("http://update.drp.su/drp_online/online_downloader.js");
-	inc("http://update.drp.su/drp_online/program_downloader.js");
+//	inc("http://update.drp.su/drp_online/online_downloader.js");
+//	inc("http://update.drp.su/drp_online/program_downloader.js");
+	inc("modules-online/online_downloader.js");
+	inc("modules-online/program_downloader.js");
+
 }
 //DRP Online
-
-
-//isAntivirus() - return true if any antivirus is installed
-//isAntivirus('Kaspersky') - return true if installed Kaspersky
-function isAntivirus(str) {
-	try {
-		
-		if (typeof(str)=="undefined") {
-			if (antivirus.length>=1){
-				return true;
-			}
-			return false;
-		}
-		
-		var ant='';
-		for (var i=0;i<antivirus.length;i++) {
-			ant=ant+antivirus[i].displayName+' - ';
-		}
-		ant=ant.toLowerCase();
-		str=str.toLowerCase();
-		
-		if (ant.indexOf(str)!=-1) { return true; }
-		
-	}
-	catch(e) { }
-	
-	return false;
-}
-//isAntivirus
-
-

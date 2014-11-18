@@ -6,6 +6,7 @@
 	var backuper_packer_exe=true;
 	
 	infobar_backup = function(){
+		targets(infobar_tabBackup, true);
 		infobar(
 				infobar_titleBackuper,
 				"<a href='#' onclick='sysRestore(); return false;' id='sysRestore'>"+bacuper_sysRestore+"</a><img src='./tools/modules/backuper/database.png' id='backupFromDrp-img'><button class='btn btn-success' onclick='return backupFromDrp()'"+(!DRPgood?" disabled='disabled'":"")+">"+bacuper_backupFromDrp+"</button> <span id='backupSystemEXE' style='visibility:"+(expertMode?"visible":"hidden")+";'><input type='checkbox' name='backuper-bd-exe' id='backuper-bd-exe' checked onclick='backuper_bd_exe=this.checked;'> "+bacuper_backupFromDrpEXE+"</span><br/>"+bacuper_backupFromDrpInfo+"<br/><br/><img src='./tools/modules/backuper/exec_wine.png' id='backupFromSystem-img'><button class='btn btn-success' onclick='backupFromSystem()'>"+bacuper_backupFromSystem+"</button> <span id='backupPackerEXE' style='visibility:"+(expertMode?"visible":"hidden")+";'><input type='checkbox' name='backuper-packer-exe' id='backuper-packer-exe' checked onclick='backuper_packer_exe=this.checked;'> "+bacuper_backupFromSystemEXE+"</span><br/>"+bacuper_backupFromSystemInfo+"<br/>",
@@ -51,6 +52,7 @@
 	
 	
 	function backupFromSystem(){
+		targets(bacuper_backupFromSystem, false);
 		backup_init();
 		
 		//Run Double Driver to create backup
@@ -75,7 +77,8 @@
 	}
 	
 	
-	function backupFromDrp(){
+	function backupFromDrp(){bacuper_backupFromDrp
+		targets(bacuper_backupFromDrp, false);
 		if (exportCount==0) { export_init(); }
 		backup_init();
 		

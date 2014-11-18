@@ -1,11 +1,16 @@
 ﻿//alert("START");
+var isAction = false;
+var errorTime = 0;
+var reportType = "Undefined";
+var currentComponent = "Undefined";;
 
 var paramsPath = "c:/4/reports.txt"; //путь к файлу с параметрами запросов 
 var userPath  = "c:/4/user.txt"; //путь к файлу с идентификатором пользователя
 
 var address = "http://www.google-analytics.com/collect"; //URL для отправки запроса по Measurement Protocol
 var v = "1";
-var tid = "UA-55108042-1"; //"UA-54491896-1"; 
+//var tid = "UA-55108042-1"; //"UA-54491896-1";
+var tid = "UA-56633790-1";  
 
 var t = "event";
 var ec = "Category";
@@ -21,52 +26,73 @@ var count = 0;
 var report = {
  "drpStartCount": {
 	"userIdDimension" : "&cd1=",
-    "drpStartsCountMeasure": "&cm1="
+    "drpStartsCountMeasure": "&cm1=",
+    "drpVersion": "&cd10="
+
   },
  "drpInstall": {
 	"userIdDimension" : "&cd1=",
-    "drpInstallationTimeMeasure": "&cm2="
+	"component" : "&cd5=",
+    "drpInstallationTimeMeasure": "&cm2=",
+    "count": "&cm12="
   },
- "driversInstallationCount": {
-	"driverDimension" : "&cd2=",
-    "totalInstallCountMeasure": "&cm3=",
-    "failureInstallCountMeasure": "&cm4="
+ "drpExitCount": {
+	"userIdDimension" : "&cd1=",
+    "drpVersion": "&cd10=",
+	"drpExitType": "&cd11=",
+    "drpExitCountMeasure": "&cm8="
+  },
+ "hardwareData": {
+	"userIdDimension" : "&cd1=",
+	"data" : "&cd6=",
+    "count": "&cm9="
+  },
+ "drpErrors" : {
+	"name" : "&cd7=",
+    "drpVersion": "&cd10=",
+	"count" : "&cm10="
   },
  "softInstallationCount": {
 	"softDimension" : "&cd3=",
     "totalInstallCountMeasure": "&cm5=",
     "failureInstallCountMeasure": "&cm6="
   },
- "funcInstallationCount": {
-	"funcDimension" : "&cd4=",
-    "funcCallCountMeasure": "&cm7="
+ "driversInstallationCount": {
+	"driverDimension" : "&cd2=",
+    "totalInstallCountMeasure": "&cm3=",
+    "failureInstallCountMeasure": "&cm4="
   },
- "drpExitCount": {
+   "installedSoft": {
 	"userIdDimension" : "&cd1=",
-    "drpExitCountMeasure": "&cm8="
+	"data" : "&cd4=",
+    "indicator": "&cm7="
   },
- "hardware": {
-	"name" : "&cd5=",
-    "data" : "&cd6=",
-	"count" : "&cm9="
-  },
- "drpErrors" : {
-	"name" : "&cd7=",
-	"count" : "&cm10="
-  },
- "buttonPress" : {
-	"name" : "&cd8=",
-	"count" : "&cm11="
-  },
- "diagnosticFunc" : {
-	"name" : "&cd9=",
-	"count" : "&cm12="
-  }
-
+   "checkedSoft": {
+    "drpVersion": "&cd10=",
+	"softDimension" : "&cd3=",
+     "indicator": "&cm13="
+ },
+   "checkedDriver": {
+    "drpVersion": "&cd10=",
+	"driverDimension" : "&cd2=",
+     "indicator": "&cm14="
+ },
+   "failures": {
+	"component" : "&cd8=",
+     "count": "&cm11="
+ },
+   "targets": {
+	"component" : "&cd8=",
+     "count": "&cm15="
+ },
+   "runningSoft": {
+    "drpVersion": "&cd10=",
+	"softName" : "&cd9=",
+     "count": "&cm16="
+ }
 
 
 };
-
 
 /*===============================================================*/
  /* Можно вызов организовать по ID элемента. Это работает */
@@ -80,75 +106,205 @@ var report = {
 */
 /*=====================================================================*/
 
-//Отчет "Использование функции "Диагностика компьютера""
-function diagnosticFunc(name){
-	var params = constantParams + report.diagnosticFunc.name + name + report.diagnosticFunc.count + 1;
+//(10) Отчет. Запускаемое ПО
+//Вызов wpi.js (function wpi(name,sorce), стр.9)
+function runningSoft(soft){
+	reportType = "10.Запускаемое ПО";
+	var drpVersion = version + verType;
+	var params = constantParams + report.runningSoft.drpVersion + drpVersion + report.runningSoft.softName + soft + report.runningSoft.count + 1;
 	sendRequest(params);
 }
 
-//Отчет "Цели: нажатие на кнопку"
-function buttonPress(name){
-	var params = constantParams + report.buttonPress.name + name + report.buttonPress.count + 1;
+//(13) Отчет. Цели
+function targets(component, switched){
+	reportType = "13.Цели";
+	var params = constantParams + report.targets.component + component + report.targets.count + 1;
+	sendRequest(params);
+
+	failures(component, switched);
+}
+
+//(3) Отчет. Отказы
+function failures(component, switched){
+	if(switched){
+		if(!isAction){
+			reportType = "3.Отказы";
+			var params = constantParams + report.failures.component + currentComponent + report.failures.count + 1;
+			sendRequest(params);
+		}
+		isAction = false;
+		currentComponent = component;
+	}
+	else{
+		isAction = true;
+	}
+}
+
+//(8)Отчет У каких драйверов стояла галочка для установки 
+//Вызов: online_downloader.js (function recalculate(), стр.373)
+function checkedDriver(element){
+	reportType = "8.У каких драйверов стояла галочка для установки";
+	var driver = $(element).parent()[0]['cells'][1]['innerText'];
+	var drpVersion = version + verType;
+
+	var params = constantParams + report.checkedDriver.drpVersion + drpVersion + 
+								report.checkedDriver.driverDimension + driver + 
+								report.checkedDriver.indicator + 1;
 	sendRequest(params);
 }
 
-//Отчет "Ошибки"
-function drpErrors(name){
-	var params = constantParams + report.drpErrors.name + name + report.drpErrors.count + 1;
+//(6)Отчет У какого софта стояла галочка для установки 
+//Вызов: program_downloader.js (function program_recalculate(), стр. 157)
+function checkedSoft(element){
+	reportType = "6.У какого софта стояла галочка для установки";
+	var soft = $(element).parent()[0]['cells'][1]['innerText'];
+	var drpVersion = version + verType;
+
+	var params = constantParams + report.checkedSoft.drpVersion + drpVersion + 
+								report.checkedSoft.softDimension + soft + 
+								report.checkedSoft.indicator + 1;
 	sendRequest(params);
 }
 
-//Отчет "Данные аппаратного обеспечения"
-function hardware(name, data){
-	var params = constantParams + report.hardware.name + name + report.hardware.data + data + report.hardware.count + 1;
+//(12)Отчет "Ошибки"
+//Вызов из error.js
+function drpErrors(msg, url, linenumber, lfn){
+	reportType = "12.Ошибки";
+	errorTime = new Date().getTime();
+
+	var textLength = 40;
+	var name = "Undefined";
+	if(msg != null){
+		if(msg.length > textLength){
+			name = "ERROR: " + msg.substr(0, textLength) + "..." + "; Line: " + linenumber + "; Last function: " + lfn;
+		}
+		else{
+			name ="ERROR: " + msg + "; In the module: " + url + "; Line: " + linenumber + "; Last function: " + lfn;
+		}
+	}
+	var drpVersion = version + verType;
+
+	var params = constantParams +   report.drpErrors.drpVersion + drpVersion + report.drpErrors.name + name + report.drpErrors.count + 1;
+	sendRequest(params);
+	
+	failures(currentComponent);
+}
+
+//(4)Отчет Данные аппаратного обеспечения
+//Вызов из DriverPackSolution.html (строка 510)
+function hardwareData(){
+	reportType = "4.Данные аппаратного обеспечения";
+
+	var value = 1;
+	
+	var data = system_comp + ManufacturerClean(Manufacturer) + " " + Model.replace(ManufacturerClean(Manufacturer));
+	var params = constantParams + report.hardwareData.userIdDimension + cid + report.hardwareData.data + data + report.hardwareData.count + value;
+	sendRequest(params);
+	
+	data = system_BIOS + ManufacturerClean(wpi('Manufacturer','Win32_BIOS')) + ' ' + wpi('SMBIOSBIOSVersion','Win32_BIOS');
+	params = constantParams + report.hardwareData.userIdDimension + cid  + report.hardwareData.data + data + report.hardwareData.count + value;
+	sendRequest(params);
+
+	data = system_processor + CPU + "  -  " + system_procTemp.replace(/ :: /gi,"<br>") + " : " + cpu_get();
+	params = constantParams + report.hardwareData.userIdDimension + cid  + report.hardwareData.data + data + report.hardwareData.count + value;
+	sendRequest(params);
+
+	data = system_memory + (RAM/1024).toPrecision(2) + " Gb";
+	params = constantParams + report.hardwareData.userIdDimension + cid  + report.hardwareData.data + data + report.hardwareData.count + value;
+	sendRequest(params);
+
+	data = system_HDD + statisticsHdd_detect() + "; " + statisticsHddFreeSpace_detect();
+	params = constantParams + report.hardwareData.userIdDimension + cid  + report.hardwareData.data + data + report.hardwareData.count + value;
+	sendRequest(params);
+
+	data = "OS:" + wpi('Caption','Win32_OperatingSystem').replace(/Microsoft /i,"") + " " +
+								wpi('CSDVersion','Win32_OperatingSystem').replace(/Service Pack /i,"SP") + " " +
+								wpi('OSArchitecture','Win32_OperatingSystem');
+	params = constantParams + report.hardwareData.userIdDimension + cid  + report.hardwareData.data + data + report.hardwareData.count + value;
+	sendRequest(params);
+
+	data = antivirus_title + antivirus_detect();
+	params = constantParams + report.hardwareData.userIdDimension + cid  + report.hardwareData.data + data + report.hardwareData.count + value;
+	sendRequest(params);
+
+	data = system_video + GPU;
+	params = constantParams + report.hardwareData.userIdDimension + cid  + report.hardwareData.data + data + report.hardwareData.count + value;
 	sendRequest(params);
 }
 
-//Отчет Событие «закрытие программы»
+//(11)Отчет Событие «закрытие программы»
+//Вызов из onExit.js (window.onbeforeunload = function())
 function drpExitCount(){
-	var params = constantParams + report.drpExitCount.userIdDimension + cid + report.drpExitCount.drpExitCountMeasure + 1;
+	reportType = "11.Событие «закрытие программы»";
+	var drpVersion = version + verType;
+	var exitType = "Закрыто в нормальном режиме";
+	var exitTime = new Date().getTime();
+	if(exitTime - errorTime > 60000){
+		exitType = "Закрыто в аварийном режиме";
+	}
+
+	var params = constantParams + report.drpExitCount.userIdDimension + cid + report.drpExitCount.drpVersion + drpVersion +
+								  report.drpExitCount.drpExitType + exitType + report.drpExitCount.drpExitCountMeasure + 1;
 	sendRequest(params);
 }
 
-//Отчет Использование функций диагностики компьютера
-//func - название функции
-function funcInstallationCount(func){
-	var params = constantParams + report.funcInstallationCount.funcDimension + func + report.funcInstallationCount.funcCallCountMeasure + 1;
+//(5)Отчет Данные установленного на компьютере ПО
+//Вызов: 
+//1.program_downloader.js (function getPrograms(), стр. 91)
+//2.online_downloader.js (function sendPost(url, not_installed, installed), стр.218)
+function installedSoft(soft){
+	reportType = "5.Данные установленного на компьютере ПО";
+	var params = constantParams + report.installedSoft.userIdDimension + cid + report.installedSoft.data + soft + report.installedSoft.indicator + 1;
 	sendRequest(params);
 }
 
-//Отчет Количество установок софта
+
+//(7)Отчет Количество установок софта
 //soft - название софта
 //failure = 1 - неудачная установка. Если софт установился failure = 0
+//Вызов: program_downloader.js ($('.programs').on('click', '.programs_download', function (), стр.414)
 function softInstallationCount(soft, failure){
+	reportType = "7.Количество установок софта";
 	var params = constantParams + report.softInstallationCount.softDimension + soft + 
 									report.softInstallationCount.totalInstallCountMeasure + 1 +
 									report.softInstallationCount.failureInstallCountMeasure + failure;
 	sendRequest(params);
 }
 
-//Отчет Количество установок драйвера
+//(9)Отчет Количество установок драйвера
 //driver - название драйвера
 //failure = 1 - неудачная установка. Если драйвер установился failure = 0
+//Вызов: online_downloader.js ($('#driver_online').on('click', '.drivers_download', function(), стр.600)
 function driversInstallationCount(driver, failure){
+	reportType = "9.Количество установок драйвера";
 	var params = constantParams + report.driversInstallationCount.driverDimension + driver + 
 									report.driversInstallationCount.totalInstallCountMeasure + 1 +
 									report.driversInstallationCount.failureInstallCountMeasure + failure;
 	sendRequest(params);
 }
 
-//Отчет Время установки DRP
-//interval - время установки в минутах
-function drpInstall(interval){
-		var params = constantParams + report.drpInstall.userIdDimension + cid + report.drpInstall.drpInstallationTimeMeasure + interval;
-		sendRequest(params);
+//(2)Отчет Время установки компонент DRP
+//component - название устанавливаемого компонента
+//interval - время установки в секундах
+//Вызов:
+//1. drp_install.js (InstallAll: function(), стр.124)
+//2. program_downloader.js ($('.programs').on('click', '.programs_download', function (), стр.414)
+//3. online_downloader.js ($('#driver_online').on('click', '.drivers_download', function(), стр.600)
+function drpInstall(component, interval){
+	reportType = "2.Время установки компонент DRP";
+	var params = constantParams + report.drpInstall.userIdDimension + cid + report.drpInstall.component + component +
+									report.drpInstall.drpInstallationTimeMeasure + interval + report.drpInstall.count + 1;
+	sendRequest(params);
 }
 
-//Отчет Количество запусков DRP
+//(1)Отчет Количество запусков DRP
+//Вызов из init.js (function onload(func))
 function drpStartCount(){
+	reportType = "1.Количество запусков DRP";
+	var drpVersion = version + verType;
 	if(count == 0){
 		count++;
-		var params = constantParams + report.drpStartCount.userIdDimension + cid + report.drpStartCount.drpStartsCountMeasure + 1;
+		var params = constantParams + report.drpStartCount.userIdDimension + cid + report.drpStartCount.drpVersion + drpVersion + report.drpStartCount.drpStartsCountMeasure + 1;
 		sendRequest(params);
 	}
 }
@@ -192,7 +348,7 @@ function sendXMLHttpRequest(params){
 		xmlhttp.setRequestHeader("Content-Type", "text/html");
 		xmlhttp.send(params);
 		var data = xmlhttp.responseText;
-		alert("xmlhttp.responseText = " + data);
+//		alert(reportType + " : params = " + params + "; xmlhttp.responseText = " + data);
 	}
 	catch(e){
 		saveRequestParams(params);
@@ -209,12 +365,12 @@ function sendAjaxRequest(params){
             dataType: 'text',
             success: function(responseData)
             {
-                alert("response = " + responseData);
+ //               alert(reportType + ": response = " + responseData + "; params = " + params);
             },
             error: function(errorThrown)
             {
 				saveRequestParams(params);
-                alert("error = " + errorThrown);
+//               alert(reportType + ": error = " + errorThrown);
             }
         });
 }
